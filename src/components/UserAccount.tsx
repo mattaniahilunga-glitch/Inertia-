@@ -140,6 +140,10 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
   const [depositAmount, setDepositAmount] = useState('');
   const [paymentProvider, setPaymentProvider] = useState<'Visa' | 'Mastercard' | 'MTN' | 'Airtel' | 'Stripe' | 'PayPal'>('Stripe');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawProvider, setWithdrawProvider] = useState<'Visa' | 'Mastercard' | 'MTN' | 'Airtel' | 'Stripe' | 'PayPal'>('Stripe');
+  const [withdrawSuccess, setWithdrawSuccess] = useState(false);
+  const [withdrawError, setWithdrawError] = useState('');
   
   // Crypto Sync engine
   const [isSyncing, setIsSyncing] = useState(false);
@@ -198,6 +202,41 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
     setDepositAmount('');
     setPaymentSuccess(true);
     setTimeout(() => setPaymentSuccess(false), 3000);
+  };
+
+  const handleWithdraw = (e: React.FormEvent) => {
+    e.preventDefault();
+    setWithdrawError('');
+    const amountNum = parseFloat(withdrawAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setWithdrawError('Please enter a valid positive amount.');
+      return;
+    }
+    if (user.balance < amountNum) {
+      setWithdrawError('Insufficient balance for this withdrawal.');
+      return;
+    }
+
+    // Build withdrawal transaction
+    const newTx: Transaction = {
+      id: `tx-${Date.now()}`,
+      type: 'withdrawal',
+      amount: amountNum,
+      currency: 'USD',
+      status: 'Completed',
+      description: `Withdrew funds via ${withdrawProvider}`,
+      timestamp: new Date().toISOString()
+    };
+
+    onAddTransaction(newTx);
+    onUpdateUser({
+      ...user,
+      balance: user.balance - amountNum
+    });
+
+    setWithdrawAmount('');
+    setWithdrawSuccess(true);
+    setTimeout(() => setWithdrawSuccess(false), 3000);
   };
 
   const togglePreference = (key: 'darkMode' | 'reducedMotion' | 'highContrast') => {
@@ -395,7 +434,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
 
         {/* WALLET TAB */}
         {activeSubTab === 'wallet' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Quick Balance */}
             <div className="bg-gradient-to-br from-indigo-900 to-slate-950 p-6 rounded-xl text-white shadow-md flex flex-col justify-between">
@@ -421,53 +460,120 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
             </div>
 
             {/* Deposit System */}
-            <div className="glass-card p-5 rounded-[24px] space-y-3">
-              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <CreditCard className="w-4 h-4 text-teal-500" /> Top-Up Secure Funds
-              </h3>
-              
-              <form onSubmit={handleDeposit} className="space-y-3">
-                <div>
-                  <label className="block text-[11px] text-slate-500 mb-1">Deposit Amount (USD)</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2 text-slate-400">$</span>
-                    <input
-                      type="number"
-                      required
-                      placeholder="50"
-                      value={depositAmount}
-                      onChange={(e) => setDepositAmount(e.target.value)}
-                      className="w-full text-xs pl-7 pr-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
-                    />
+            <div className="glass-card p-5 rounded-[24px] space-y-3 flex flex-col justify-between">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 mb-1">
+                  <CreditCard className="w-4 h-4 text-teal-500" /> Deposit Funds
+                </h3>
+                <p className="text-[10px] text-slate-400 mb-2">Increase your local wallet balance instantly.</p>
+                
+                <form onSubmit={handleDeposit} className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] text-slate-500 mb-1">Deposit Amount (USD)</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2 text-slate-400">$</span>
+                      <input
+                        type="number"
+                        required
+                        placeholder="50"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                        className="w-full text-xs pl-7 pr-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-[11px] text-slate-500 mb-1">Payment Infrastructure</label>
-                  <select
-                    value={paymentProvider}
-                    onChange={(e: any) => setPaymentProvider(e.target.value)}
-                    className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                  <div>
+                    <label className="block text-[11px] text-slate-500 mb-1">Payment Infrastructure</label>
+                    <select
+                      value={paymentProvider}
+                      onChange={(e: any) => setPaymentProvider(e.target.value)}
+                      className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                    >
+                      <option value="Stripe">Stripe API (Global)</option>
+                      <option value="PayPal">PayPal Holdings</option>
+                      <option value="Visa">Visa / Mastercard</option>
+                      <option value="MTN">MTN MoMo (Africa Regional)</option>
+                      <option value="Airtel">Airtel Money (Africa Regional)</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-1.5 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-lg cursor-pointer transition-colors"
                   >
-                    <option value="Stripe">Stripe API (Global)</option>
-                    <option value="PayPal">PayPal Holdings</option>
-                    <option value="Visa">Visa / Mastercard</option>
-                    <option value="MTN">MTN MoMo (Africa Regional)</option>
-                    <option value="Airtel">Airtel Money (Africa Regional)</option>
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full py-1.5 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-lg cursor-pointer transition-colors"
-                >
-                  Confirm Secure Deposit
-                </button>
-              </form>
+                    Confirm Secure Deposit
+                  </button>
+                </form>
+              </div>
 
               {paymentSuccess && (
                 <div className="text-teal-600 dark:text-teal-400 text-[10px] flex items-center gap-1 mt-1">
-                  <CheckCircle2 className="w-3 h-3" /> Deposit loaded! Local sync completed.
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Deposit loaded! Local sync completed.
+                </div>
+              )}
+            </div>
+
+            {/* Withdraw System */}
+            <div className="glass-card p-5 rounded-[24px] space-y-3 flex flex-col justify-between">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 mb-1">
+                  <ArrowUpRight className="w-4 h-4 text-indigo-500" /> Withdraw Funds
+                </h3>
+                <p className="text-[10px] text-slate-400 mb-2">Liquidate and payout your balances.</p>
+                
+                <form onSubmit={handleWithdraw} className="space-y-3">
+                  <div>
+                    <label className="block text-[11px] text-slate-500 mb-1">Withdraw Amount (USD)</label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2 text-slate-400">$</span>
+                      <input
+                        type="number"
+                        required
+                        placeholder="50"
+                        value={withdrawAmount}
+                        onChange={(e) => {
+                          setWithdrawAmount(e.target.value);
+                          setWithdrawError('');
+                        }}
+                        className="w-full text-xs pl-7 pr-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] text-slate-500 mb-1">Payout Channel</label>
+                    <select
+                      value={withdrawProvider}
+                      onChange={(e: any) => setWithdrawProvider(e.target.value)}
+                      className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                    >
+                      <option value="Stripe">Stripe Payouts</option>
+                      <option value="PayPal">PayPal Balance Transfer</option>
+                      <option value="Visa">Visa Direct / Mastercard</option>
+                      <option value="MTN">MTN MoMo Payout</option>
+                      <option value="Airtel">Airtel Money Payout</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg cursor-pointer transition-colors"
+                  >
+                    Confirm Withdrawal
+                  </button>
+                </form>
+              </div>
+
+              {withdrawError && (
+                <div className="text-rose-500 text-[10px] flex items-center gap-1 mt-1">
+                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {withdrawError}
+                </div>
+              )}
+
+              {withdrawSuccess && (
+                <div className="text-teal-600 dark:text-teal-400 text-[10px] flex items-center gap-1 mt-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Payout initiated successfully!
                 </div>
               )}
             </div>
