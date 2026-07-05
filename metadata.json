@@ -1,0 +1,10 @@
+{
+  "name": "INERTIA",
+  "description": "Learn. Hustle. Build. Trade. A production-ready, unified platform featuring Inertia Unfazed (gamified skill-sharing education), Inertia Hustler (work marketplace), and Inertia Stack (African enterprise marketplace). Built by Mattaniah Ilunga.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
