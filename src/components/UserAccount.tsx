@@ -9,7 +9,8 @@ import { INITIAL_TRANSACTIONS } from '../data/mockData';
 import { 
   User, ShieldCheck, Wallet, Settings, Bell, Bookmark, Award, 
   Lock, Key, RefreshCw, Smartphone, Mail, Globe, Sparkles, CreditCard,
-  DollarSign, ArrowUpRight, ArrowDownLeft, CheckCircle2, AlertTriangle
+  DollarSign, ArrowUpRight, ArrowDownLeft, CheckCircle2, AlertTriangle,
+  Camera, Upload, Image, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -23,6 +24,109 @@ interface UserAccountProps {
 export default function UserAccount({ user, onUpdateUser, transactions, onAddTransaction }: UserAccountProps) {
   const [activeSubTab, setActiveSubTab] = useState<'profile' | 'wallet' | 'security' | 'privacy'>('profile');
   
+  // Profile Picture (Avatar) selection states
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const [tempAvatarUrl, setTempAvatarUrl] = useState('');
+
+  const PRESET_AVATARS = [
+    { url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', name: 'Female Dev Classic' },
+    { url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', name: 'Male Dev Classic' },
+    { url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150', name: 'Creative Designer' },
+    { url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', name: 'Tech Lead' },
+    { url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150', name: 'Systems Engineer' },
+    { url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150', name: 'Project Lead' },
+    { url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150', name: 'AI Specialist' },
+    { url: 'https://images.unsplash.com/photo-1607990283143-e81e7a2c93ab?w=150', name: 'Product Architect' }
+  ];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAvatarError('');
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setAvatarError('File size must be smaller than 2MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setAvatarError('Only image files (JPEG, PNG, WEBP) are supported');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          onUpdateUser({
+            ...user,
+            avatar: event.target.result as string
+          });
+        }
+      };
+      reader.onerror = () => {
+        setAvatarError('Error reading file. Please try again.');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    setAvatarError('');
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setAvatarError('File size must be smaller than 2MB');
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setAvatarError('Only image files (JPEG, PNG, WEBP) are supported');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          onUpdateUser({
+            ...user,
+            avatar: event.target.result as string
+          });
+        }
+      };
+      reader.onerror = () => {
+        setAvatarError('Error reading file. Please try again.');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleApplyUrl = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAvatarError('');
+    if (!tempAvatarUrl.trim()) {
+      setAvatarError('Please enter a valid image URL');
+      return;
+    }
+    if (!tempAvatarUrl.startsWith('http://') && !tempAvatarUrl.startsWith('https://')) {
+      setAvatarError('Image URL must start with http:// or https://');
+      return;
+    }
+    onUpdateUser({
+      ...user,
+      avatar: tempAvatarUrl.trim()
+    });
+    setTempAvatarUrl('');
+  };
+
   // Auth Form states
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
@@ -138,13 +242,22 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
       {/* Account Info Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-6">
         <div className="flex items-center gap-4">
-          <img 
-            src={user.avatar} 
-            alt={user.username} 
-            className="w-16 h-16 rounded-full border-2 border-teal-500 object-cover shadow-sm"
-          />
+          <div className="relative group flex-shrink-0">
+            <img 
+              src={user.avatar} 
+              alt={user.username} 
+              className="w-16 h-16 rounded-full border-2 border-teal-500 object-cover shadow-sm transition-all group-hover:brightness-75"
+            />
+            <button
+              onClick={() => setShowAvatarModal(true)}
+              className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-white cursor-pointer"
+              title="Change Profile Picture"
+            >
+              <Camera className="w-5 h-5" />
+            </button>
+          </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">{user.username}</h2>
               <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
                 {user.rank} Rank
@@ -152,6 +265,12 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
             <p className="text-[11px] text-slate-400 font-mono mt-1">Level {user.level} | Daily Streak: 🔥 {user.dailyStreak} days</p>
+            <button 
+              onClick={() => setShowAvatarModal(true)}
+              className="text-[10px] text-teal-600 dark:text-teal-400 font-bold hover:underline mt-1.5 flex items-center gap-1 cursor-pointer focus:outline-none"
+            >
+              <Camera className="w-3 h-3" /> Change Profile Picture
+            </button>
           </div>
         </div>
 
@@ -175,7 +294,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
       </div>
 
       {/* Internal Navigation */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 mb-6 overflow-x-auto">
+      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 mb-6 overflow-x-auto scrollbar-none">
         {[
           { id: 'profile', label: 'Dashboard & Profile', icon: User },
           { id: 'wallet', label: 'E-Wallet & Escrow', icon: Wallet },
@@ -188,7 +307,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id as any)}
-              className={`flex items-center gap-1.5 pb-2 text-xs font-semibold border-b-2 transition-all duration-200 px-1 cursor-pointer ${
+              className={`flex items-center gap-1.5 pb-2 text-xs font-semibold border-b-2 transition-all duration-200 px-1 cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 isActive 
                   ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold' 
                   : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -607,6 +726,153 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+
+        {showAvatarModal && (
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="glass-card max-w-lg w-full p-6 rounded-[28px] shadow-2xl relative bg-white/85 dark:bg-slate-950/85 backdrop-blur-xl border border-slate-200/50 dark:border-white/5 space-y-6 text-[#0F1F15] dark:text-[#ECFDF5]"
+            >
+              <button 
+                onClick={() => {
+                  setShowAvatarModal(false);
+                  setAvatarError('');
+                }}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm cursor-pointer p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="text-center">
+                <span className="text-[10px] uppercase tracking-wider font-mono text-teal-500 font-bold">Personalize Identity</span>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white mt-1">
+                  Change Profile Picture
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Select a preset portrait, drag and drop an image file, or supply a web URL.
+                </p>
+              </div>
+
+              {avatarError && (
+                <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs p-3 rounded-xl flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <span>{avatarError}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Drag and Drop/Upload Box */}
+                <div className="space-y-3">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Option 1: Upload Image</span>
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`h-[160px] border-2 border-dashed rounded-2xl flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all ${
+                      isDragging 
+                        ? 'border-teal-500 bg-teal-500/10 scale-[1.02]' 
+                        : 'border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 hover:border-teal-500/50 hover:bg-slate-50 dark:hover:bg-slate-900/50'
+                    }`}
+                    onClick={() => document.getElementById('avatar-file-input')?.click()}
+                  >
+                    <input
+                      id="avatar-file-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <Upload className="w-8 h-8 text-slate-400 dark:text-slate-500 mb-2" />
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                      Drag & Drop image
+                    </span>
+                    <span className="text-[10px] text-slate-400 mt-1">
+                      or click to browse
+                    </span>
+                    <span className="text-[9px] text-slate-500 dark:text-slate-500 font-mono mt-1">
+                      Max: 2MB (JPG, PNG, WEBP)
+                    </span>
+                  </div>
+                </div>
+
+                {/* Preset Avatars Selection */}
+                <div className="space-y-3">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Option 2: Preset Avatars</span>
+                  <div className="grid grid-cols-4 gap-2.5 max-h-[160px] overflow-y-auto pr-1">
+                    {PRESET_AVATARS.map((p, idx) => {
+                      const isSelected = user.avatar === p.url;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setAvatarError('');
+                            onUpdateUser({
+                              ...user,
+                              avatar: p.url
+                            });
+                          }}
+                          className={`relative rounded-full overflow-hidden w-11 h-11 border-2 transition-all hover:scale-105 cursor-pointer ${
+                            isSelected 
+                              ? 'border-teal-500 ring-2 ring-teal-500/20 shadow-md' 
+                              : 'border-slate-200 dark:border-slate-850'
+                          }`}
+                          title={p.name}
+                        >
+                          <img src={p.url} alt={p.name} className="w-full h-full object-cover" />
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-teal-500/20 flex items-center justify-center">
+                              <CheckCircle2 className="w-4 h-4 text-white drop-shadow-md" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Paste URL block */}
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800/80 space-y-3">
+                <span className="text-[10px] uppercase font-bold text-slate-400 font-mono block">Option 3: External Image URL</span>
+                <form onSubmit={handleApplyUrl} className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="https://images.unsplash.com/photo-..."
+                    value={tempAvatarUrl}
+                    onChange={(e) => setTempAvatarUrl(e.target.value)}
+                    className="flex-1 text-xs px-3 py-2 border border-slate-200 dark:border-slate-850 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg cursor-pointer transition-colors"
+                  >
+                    Apply URL
+                  </button>
+                </form>
+              </div>
+
+              <div className="flex justify-between items-center pt-2 text-[10px] text-slate-400 font-mono">
+                <div className="flex items-center gap-1.5">
+                  <img src={user.avatar} className="w-6 h-6 rounded-full object-cover border border-teal-500" />
+                  <span>Current Avatar Preview</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAvatarModal(false);
+                    setAvatarError('');
+                  }}
+                  className="px-4 py-1.5 font-bold text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-900 cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

@@ -77,14 +77,14 @@ body {
   --slate-50: #F4F7F5;
   --slate-100: #E6ECE8;
   --slate-200: #CBD5CE;
-  --slate-300: #93A69A;
-  --slate-400: #4B6152; /* Highly readable dark sage-gray */
-  --slate-500: #2C3E33; /* Extremely high readability forest-ink */
-  --slate-600: #1C2921;
-  --slate-700: #0F1712;
-  --slate-800: #0A0F0C;
-  --slate-900: #050806;
-  --slate-950: #020403;
+  --slate-300: #5D7665; /* Darkened for much better light mode text contrast */
+  --slate-400: #2C3E33; /* Darkened for highly readable dark sage-gray text */
+  --slate-500: #1C2921; /* Darkened for extremely high readability forest-ink text */
+  --slate-600: #0F1712;
+  --slate-700: #0A0F0C;
+  --slate-800: #050806;
+  --slate-900: #020403;
+  --slate-950: #000000;
 }
 
 .dark {
@@ -106,6 +106,51 @@ body {
   --slate-800: #F9FEFA; /* Solid sandstone ivory */
   --slate-900: #FFFFFF;
   --slate-950: #FFFFFF;
+}
+
+/* --- PREMIUM HIGH-CONTRAST LEGIBILITY OVERRIDES --- */
+
+/* 1. Ensure select option dropdown text is perfectly readable in both light and dark modes */
+select, option {
+  background-color: #FFFFFF !important;
+  color: #0F1F15 !important;
+}
+
+.dark select, .dark option {
+  background-color: #0c1410 !important;
+  color: #ECFDF5 !important;
+}
+
+/* 2. Fix category, metadata, and skills badges in dark mode (no more light-on-white) */
+.dark span.dark\:bg-slate-900,
+.dark span.bg-slate-900,
+.dark .glass-card span.bg-slate-100,
+.dark .glass-card span.bg-slate-50,
+.dark .glass-card-hover span.bg-slate-100,
+.dark .glass-card-hover span.bg-slate-50 {
+  background-color: #1B3524 !important; /* Beautiful dark moss green background */
+  color: #ECFDF5 !important; /* Off-white glowing mint text */
+  border: 1px solid rgba(52, 211, 153, 0.25) !important;
+}
+
+/* 3. Fix active role and mode switcher buttons in dark mode (no more white-on-white) */
+.dark .dark\:bg-slate-800 {
+  background-color: #1B3524 !important;
+  color: #ECFDF5 !important;
+  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+}
+
+/* 4. Force high-contrast text on solid white buttons in dark mode */
+.dark button.dark\:bg-white,
+.dark a.dark\:bg-white,
+.dark .dark\:bg-white.dark\:text-slate-950 {
+  background-color: #FFFFFF !important;
+  color: #030604 !important;
+}
+
+/* 5. Improve overall card body copy readability in both light and dark modes */
+.glass-card p {
+  text-shadow: none !important;
 }
 
 /* Glass Card - Enhanced for maximum clarity and high contrast */

@@ -118,8 +118,8 @@ export default function HustlerApp({ user, onUpdateUser, transactions, onAddTran
         </div>
 
         {/* Role Switcher */}
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
-          <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-400 px-1.5">Switch role:</span>
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-800 overflow-x-auto whitespace-nowrap scrollbar-none max-w-full">
+          <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-400 px-1.5 flex-shrink-0">Switch role:</span>
           {['Client', 'Freelancer', 'Worker', 'Agency'].map((r) => (
             <button
               key={r}
@@ -127,7 +127,7 @@ export default function HustlerApp({ user, onUpdateUser, transactions, onAddTran
                 setRole(r as any);
                 onUpdateUser({ ...user, role: r as any });
               }}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 role === r
                   ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -140,7 +140,7 @@ export default function HustlerApp({ user, onUpdateUser, transactions, onAddTran
       </div>
 
       {/* Internal Navigation tabs */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 mb-6 overflow-x-auto">
+      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800 pb-2 mb-6 overflow-x-auto scrollbar-none">
         {[
           { id: 'listings', label: 'Explore Contracts', icon: Briefcase },
           { id: 'post', label: 'Post a New Job (Escrow Lock)', icon: Plus },
@@ -153,7 +153,7 @@ export default function HustlerApp({ user, onUpdateUser, transactions, onAddTran
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-1.5 pb-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 pb-2 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
                 isActive 
                   ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold' 
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'

@@ -187,7 +187,7 @@ export default function UnfazedApp({ user, onUpdateUser }: UnfazedAppProps) {
 
       {/* Course Sub Tabs */}
       {!selectedCourseId && (
-        <div className="flex gap-3 mb-6 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
+        <div className="flex gap-3 mb-6 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-none">
           {[
             { id: 'catalog', label: 'E-Learning Catalog', icon: BookOpen },
             { id: 'leaderboard', label: 'Global Hustlers Leaderboard', icon: Trophy },
@@ -199,7 +199,7 @@ export default function UnfazedApp({ user, onUpdateUser }: UnfazedAppProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-1.5 pb-2 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 pb-2 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
                   isActive 
                     ? 'border-teal-500 text-teal-600 dark:text-teal-400 font-bold' 
                     : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'

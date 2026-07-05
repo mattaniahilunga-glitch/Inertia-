@@ -8,7 +8,7 @@ import { UserProfile, Transaction, NotificationItem } from './types';
 import { INITIAL_USER, INITIAL_TRANSACTIONS } from './data/mockData';
 import { 
   Bell, Wallet, Compass, Award, Briefcase, ShoppingBag, 
-  Users, Layers, User, ShieldCheck, Sun, Moon, Sparkles, Clock 
+  Users, Layers, User, ShieldCheck, Sun, Moon, Sparkles, Clock, LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -18,15 +18,30 @@ import UnfazedApp from './components/UnfazedApp';
 import HustlerApp from './components/HustlerApp';
 import StackApp from './components/StackApp';
 import SocialHub from './components/SocialHub';
-import DeliverablesTab from './components/DeliverablesTab';
 import UserAccount from './components/UserAccount';
 import Footer from './components/Footer';
+import GetStarted from './components/GetStarted';
 
 export default function App() {
   // Shared Core States
-  const [user, setUser] = useState<UserProfile>(INITIAL_USER);
+  const [user, setUser] = useState<UserProfile>(() => {
+    const cachedUser = localStorage.getItem('inertia-active-user');
+    if (cachedUser) {
+      try {
+        return JSON.parse(cachedUser);
+      } catch (e) {
+        return INITIAL_USER;
+      }
+    }
+    return INITIAL_USER;
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    return sessionStorage.getItem('inertia-session-active') === 'true';
+  });
+
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
-  const [activeTab, setActiveTab] = useState<'home' | 'unfazed' | 'hustler' | 'stack' | 'social' | 'deliverables' | 'account'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'unfazed' | 'hustler' | 'stack' | 'social' | 'account'>('home');
   
   // Theme state
   const [darkMode, setDarkMode] = useState<boolean>(true);
@@ -84,8 +99,33 @@ export default function App() {
     }
   };
 
+  const handleLogin = (loggedInUser: UserProfile) => {
+    setUser(loggedInUser);
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('inertia-session-active');
+    localStorage.removeItem('inertia-active-user');
+    setIsLoggedIn(false);
+    setActiveTab('home');
+  };
+
   const handleUpdateUser = (updatedUser: UserProfile) => {
     setUser(updatedUser);
+    localStorage.setItem('inertia-active-user', JSON.stringify(updatedUser));
+    
+    // Also update in registered list so edits persist!
+    const registeredUsersJson = localStorage.getItem('inertia-registered-users');
+    if (registeredUsersJson) {
+      try {
+        const usersMap = JSON.parse(registeredUsersJson);
+        usersMap[updatedUser.email.toLowerCase()] = updatedUser;
+        localStorage.setItem('inertia-registered-users', JSON.stringify(usersMap));
+      } catch (e) {
+        console.error('Error updating persisted user map', e);
+      }
+    }
   };
 
   const handleAddTransaction = (newTx: Transaction) => {
@@ -98,6 +138,10 @@ export default function App() {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
+  if (!isLoggedIn) {
+    return <GetStarted onLogin={handleLogin} darkMode={darkMode} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#F2F6F3] dark:bg-[#050B07] text-[#0F1F15] dark:text-[#ECFDF5] transition-colors duration-400 flex flex-col justify-between font-sans selection:bg-emerald-500/20 selection:text-emerald-950 relative overflow-hidden">
       
@@ -108,22 +152,6 @@ export default function App() {
 
       <div className="relative z-10 flex flex-col justify-between min-h-screen">
         <div>
-          {/* TOP STATUS INFRASTRUCTURE DECORATION */}
-          <div className="bg-[#F2F6F3]/30 dark:bg-[#050B07]/30 backdrop-blur-md px-4 py-1 border-b border-emerald-500/10 dark:border-white/5 text-[10px] font-mono text-slate-500 dark:text-slate-400 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                SECURE ENGINE
-              </span>
-              <span>API: Serverless Express Router Active</span>
-              <span>E2EE: AES-256-GCM Cryptography Verified</span>
-            </div>
-            <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-              <Clock className="w-3 h-3" />
-              UTC: {currentTime.toUTCString().replace('GMT', '')}
-            </div>
-          </div>
-
           {/* CORE APPLICATION NAVIGATION HEADER */}
           <header className="sticky top-0 z-40 glass-navbar transition-colors">
             <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex justify-between items-center">
@@ -131,14 +159,14 @@ export default function App() {
               {/* Logo Brand */}
               <button 
                 onClick={() => setActiveTab('home')}
-                className="flex items-center gap-2 cursor-pointer group text-start focus:outline-none"
+                className="flex items-center gap-2 cursor-pointer group text-start focus:outline-none flex-shrink-0"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-950 font-extrabold text-base tracking-tighter group-hover:scale-105 transition-transform">
                   I
                 </div>
                 <div>
                   <h1 className="text-base font-black tracking-tight text-slate-950 dark:text-white leading-none">INERTIA</h1>
-                  <span className="text-[9px] uppercase tracking-wider font-mono text-slate-400 font-bold">Start. Learn. Trade</span>
+                  <span className="text-[9px] uppercase tracking-wider font-mono text-slate-400 font-bold hidden sm:inline">Start. Learn. Trade</span>
                 </div>
               </button>
 
@@ -149,8 +177,7 @@ export default function App() {
                 { id: 'unfazed', label: 'Unfazed Academy', icon: Award },
                 { id: 'hustler', label: 'Hustler Gigs', icon: Briefcase },
                 { id: 'stack', label: 'Stack Market', icon: ShoppingBag },
-                { id: 'social', label: 'Social Hub', icon: Users },
-                { id: 'deliverables', label: 'Developer Hub', icon: Layers }
+                { id: 'social', label: 'Social Hub', icon: Users }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -172,7 +199,7 @@ export default function App() {
             </nav>
 
             {/* Right Side Widgets (Theme, Balance, Profile, Notif) */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3">
               
               {/* Theme Toggle */}
               <button
@@ -215,7 +242,7 @@ export default function App() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-72 bg-white/90 dark:bg-slate-950/90 border border-slate-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-4 shadow-xl z-50 space-y-3"
+                      className="fixed top-16 left-4 right-4 sm:absolute sm:top-auto sm:left-auto sm:right-0 sm:mt-2 sm:w-72 bg-white/90 dark:bg-slate-950/90 border border-slate-200/50 dark:border-white/10 backdrop-blur-xl rounded-xl p-4 shadow-xl z-50 space-y-3"
                     >
                       <div className="flex justify-between items-center border-b border-slate-200/50 dark:border-white/5 pb-2">
                         <h4 className="font-bold text-xs text-slate-900 dark:text-white">Encrypted Notifications</h4>
@@ -244,6 +271,15 @@ export default function App() {
                 <img src={user.avatar} className="w-full h-full object-cover" />
               </button>
 
+              {/* Disconnect Node Button */}
+              <button
+                onClick={handleLogout}
+                className="w-8.5 h-8.5 rounded-lg border border-slate-200/50 dark:border-white/10 bg-white/10 dark:bg-white/5 backdrop-blur-md flex items-center justify-center text-rose-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 dark:hover:bg-rose-500/10 cursor-pointer transition-colors"
+                title="Disconnect Node (Logout)"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+
             </div>
 
           </div>
@@ -255,8 +291,7 @@ export default function App() {
               { id: 'unfazed', label: 'Unfazed', icon: Award },
               { id: 'hustler', label: 'Hustler', icon: Briefcase },
               { id: 'stack', label: 'Stack', icon: ShoppingBag },
-              { id: 'social', label: 'Social', icon: Users },
-              { id: 'deliverables', label: 'Deliverables', icon: Layers }
+              { id: 'social', label: 'Social', icon: Users }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -312,15 +347,13 @@ export default function App() {
                 <StackApp 
                   user={user} 
                   onUpdateUser={handleUpdateUser} 
+                  onAddTransaction={handleAddTransaction}
                 />
               )}
               {activeTab === 'social' && (
                 <SocialHub 
                   user={user} 
                 />
-              )}
-              {activeTab === 'deliverables' && (
-                <DeliverablesTab />
               )}
               {activeTab === 'account' && (
                 <UserAccount 

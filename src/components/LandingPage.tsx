@@ -21,6 +21,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
   const [interestQuizActive, setInterestQuizActive] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<{ skills: boolean; business: boolean; capital: boolean } | null>(null);
   const [recommendationResult, setRecommendationResult] = useState<'unfazed' | 'hustler' | 'stack' | 'all' | null>(null);
+  const [activeSynergyTab, setActiveSynergyTab] = useState<'account' | 'crypto' | 'loop'>('account');
 
   const handleRunRecommendation = (skills: boolean, business: boolean, capital: boolean) => {
     setQuizAnswers({ skills, business, capital });
@@ -170,11 +171,223 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
         )}
       </AnimatePresence>
 
-      {/* 3. PLATFORM OVERVIEW (THREE CARDS) */}
+      {/* 3. PLATFORM OVERVIEW (THREE CARDS & INTERACTIVE EXPLAINER) */}
       <section className="space-y-6">
         <div className="text-center">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">Three Unified Pillars of Synergy</h2>
           <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">One account. One secure crypto sync. Infinite market possibilities.</p>
+        </div>
+
+        {/* INTERACTIVE SYNERGY EXPLAINER BOARD */}
+        <div className="glass-card p-6 rounded-[28px] border border-slate-200/50 dark:border-white/5 space-y-6">
+          {/* Tab switches */}
+          <div className="grid grid-cols-3 gap-2 p-1 bg-slate-100/50 dark:bg-slate-950/80 rounded-xl border border-slate-200/50 dark:border-slate-800">
+            <button
+              onClick={() => setActiveSynergyTab('account')}
+              className={`py-2 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer flex flex-col md:flex-row items-center justify-center gap-1.5 ${
+                activeSynergyTab === 'account'
+                  ? 'bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>1. One Account</span>
+            </button>
+            <button
+              onClick={() => setActiveSynergyTab('crypto')}
+              className={`py-2 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer flex flex-col md:flex-row items-center justify-center gap-1.5 ${
+                activeSynergyTab === 'crypto'
+                  ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>2. One Secure Crypto Sync</span>
+            </button>
+            <button
+              onClick={() => setActiveSynergyTab('loop')}
+              className={`py-2 text-[11px] md:text-xs font-bold rounded-lg transition-all cursor-pointer flex flex-col md:flex-row items-center justify-center gap-1.5 ${
+                activeSynergyTab === 'loop'
+                  ? 'bg-white dark:bg-slate-800 text-teal-600 dark:text-teal-400 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+              }`}
+            >
+              <Server className="w-3.5 h-3.5" />
+              <span>3. Infinite Market Possibilities</span>
+            </button>
+          </div>
+
+          {/* Dynamic Content Panels */}
+          <AnimatePresence mode="wait">
+            {activeSynergyTab === 'account' && (
+              <motion.div
+                key="account"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center"
+              >
+                <div className="md:col-span-7 space-y-3">
+                  <span className="text-[10px] uppercase font-bold text-teal-600 dark:text-teal-400 font-mono bg-teal-500/10 px-2 py-0.5 rounded">
+                    Pillar I: Single Global Identity
+                  </span>
+                  <h3 className="text-xs md:text-sm font-extrabold text-slate-900 dark:text-white">
+                    One account across Unfazed, Hustler, and Stack
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Instead of fragmenting your professional and educational goals across unrelated sites, Inertia pools your progress under a single profile. Your learning achievements in Inertia Unfazed unlock premium contract tiers in Inertia Hustler, and your client ratings reinforce your marketplace reputation on Inertia Stack automatically.
+                  </p>
+                  <div className="grid grid-cols-3 gap-3 pt-1">
+                    <div className="p-2 bg-slate-50/50 dark:bg-slate-900/40 rounded-lg text-center border border-slate-200/50 dark:border-slate-800/80">
+                      <span className="block text-[8px] uppercase text-slate-400 font-semibold font-mono">Unfazed Role</span>
+                      <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">Technical Student</span>
+                    </div>
+                    <div className="p-2 bg-slate-50/50 dark:bg-slate-900/40 rounded-lg text-center border border-slate-200/50 dark:border-slate-800/80">
+                      <span className="block text-[8px] uppercase text-slate-400 font-semibold font-mono">Hustler Role</span>
+                      <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">Freelancer / Client</span>
+                    </div>
+                    <div className="p-2 bg-slate-50/50 dark:bg-slate-900/40 rounded-lg text-center border border-slate-200/50 dark:border-slate-800/80">
+                      <span className="block text-[8px] uppercase text-slate-400 font-semibold font-mono">Stack Role</span>
+                      <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">Wholesale Merchant</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="md:col-span-5 bg-slate-50 dark:bg-slate-900/40 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/80 space-y-3">
+                  <div className="flex items-center gap-2.5 pb-2.5 border-b border-slate-200/50 dark:border-slate-800">
+                    <div className="w-8 h-8 rounded-full bg-teal-500/20 flex items-center justify-center font-bold text-teal-600 text-xs">IN</div>
+                    <div>
+                      <span className="text-[10px] text-slate-400 font-mono">Active Profile Switcher</span>
+                      <h4 className="font-bold text-xs text-slate-900 dark:text-white">Unified Identity Hub</h4>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                    <div className="flex justify-between items-center bg-white dark:bg-slate-950 p-1.5 rounded border border-slate-200/50 dark:border-slate-800/80">
+                      <span>✓ Unfazed XP Credentials</span>
+                      <span className="text-teal-500 font-bold">1,200 XP Sync</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-white dark:bg-slate-950 p-1.5 rounded border border-slate-200/50 dark:border-slate-800/80">
+                      <span>✓ Hustler Reputation Rating</span>
+                      <span className="text-indigo-500 font-bold">5.0 ⭐ (8 orders)</span>
+                    </div>
+                    <div className="flex justify-between items-center bg-white dark:bg-slate-950 p-1.5 rounded border border-slate-200/50 dark:border-slate-800/80">
+                      <span>✓ Stack Enterprise Store</span>
+                      <span className="text-teal-500 font-bold">2 listings active</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeSynergyTab === 'crypto' && (
+              <motion.div
+                key="crypto"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center"
+              >
+                <div className="md:col-span-7 space-y-3">
+                  <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 font-mono bg-indigo-500/10 px-2 py-0.5 rounded">
+                    Pillar II: One Secure Crypto Sync
+                  </span>
+                  <h3 className="text-xs md:text-sm font-extrabold text-slate-900 dark:text-white">
+                    One secure stable balance sync across the platform
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Your stable balance is secured by our unified, locally simulated ledger database. When you unlock tasks, execute contracts in Inertia Hustler, or complete multi-item orders in Inertia Stack, the secure balance ledger updates globally across all sub-apps in real time.
+                  </p>
+                  <ul className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                    <li className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">⚡ Instant balance crossovers</li>
+                    <li className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">🛡️ Fraud-prevention ledger state</li>
+                    <li className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">🔒 Smart Escrow secure contracts</li>
+                    <li className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">📈 Gas-free ledger settlement</li>
+                  </ul>
+                </div>
+                <div className="md:col-span-5 bg-slate-950 border border-slate-800 p-4 rounded-2xl space-y-3 text-white">
+                  <div className="flex justify-between items-center border-b border-slate-850 pb-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping" />
+                      <span className="text-[9px] font-mono font-bold tracking-widest text-emerald-400">CRYPTO LEDGER SYNC ONLINE</span>
+                    </div>
+                    <span className="text-[8px] font-mono text-slate-500">v1.0.4 stable</span>
+                  </div>
+                  <div className="space-y-1 text-[10px] font-mono">
+                    <div className="flex justify-between text-slate-400">
+                      <span>Ledger Account:</span>
+                      <span className="text-white font-bold">Inertia Stable USD</span>
+                    </div>
+                    <div className="flex justify-between text-slate-400">
+                      <span>Network State:</span>
+                      <span className="text-teal-400 font-bold">Synchronized</span>
+                    </div>
+                    <div className="flex justify-between text-slate-400">
+                      <span>Synced Balance:</span>
+                      <span className="text-white font-bold text-xs">${userBalance.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <div className="bg-slate-900 p-2 rounded-lg text-[9px] text-indigo-300 font-mono flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Double-signature cryptographic verification active</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeSynergyTab === 'loop' && (
+              <motion.div
+                key="loop"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center"
+              >
+                <div className="md:col-span-7 space-y-3">
+                  <span className="text-[10px] uppercase font-bold text-teal-600 dark:text-teal-400 font-mono bg-teal-500/10 px-2 py-0.5 rounded">
+                    Pillar III: Infinite Market Possibilities
+                  </span>
+                  <h3 className="text-xs md:text-sm font-extrabold text-slate-900 dark:text-white">
+                    Settle & Trade Loop: Build Autonomous Local Wealth
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    This circular economy guarantees self-sustaining opportunities for technical builders and product merchants:
+                  </p>
+                  <div className="space-y-2 pt-1 text-xs">
+                    <div className="flex gap-2.5 items-start">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] font-bold font-mono">01</span>
+                      <div>
+                        <strong className="text-slate-800 dark:text-slate-200">Educate & Certify:</strong>
+                        <span className="text-slate-500 dark:text-slate-400 ml-1 text-[11px]">Acquire real-world skills inside Unfazed to mint verified credential proofs.</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2.5 items-start">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold font-mono">02</span>
+                      <div>
+                        <strong className="text-slate-800 dark:text-slate-200">Secure Gig Capital:</strong>
+                        <span className="text-slate-500 dark:text-slate-400 ml-1 text-[11px]">Bid for smart contracts inside Hustler and secure capital locked safely in Escrows.</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2.5 items-start">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] font-bold font-mono">03</span>
+                      <div>
+                        <strong className="text-slate-800 dark:text-slate-200">Launch Bulk Trade:</strong>
+                        <span className="text-slate-500 dark:text-slate-400 ml-1 text-[11px]">Deploy earned capital directly to operate wholesale storefronts, fulfill bulk orders, and trade via interactive map routing on Inertia Stack.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="md:col-span-5 bg-gradient-to-tr from-teal-500/10 via-indigo-500/10 to-teal-500/5 p-5 rounded-2xl border border-slate-200/50 dark:border-white/5 flex flex-col justify-center items-center text-center space-y-4 h-[220px]">
+                  <div className="relative w-12 h-12 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-2 border-dashed border-teal-500/30 animate-spin" />
+                    <Sparkles className="w-6 h-6 text-teal-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-extrabold text-xs text-slate-900 dark:text-white">Active Growth Loop Connected</h4>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 max-w-[200px] mx-auto">Learn, Earn, Trade, and Accumulate Secure Capital in a Closed Economic Engine.</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -192,18 +405,18 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
 
               <div className="p-5 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] uppercase font-bold tracking-widest text-teal-600 dark:text-teal-400 font-mono">Pillar #01</span>
+                  <span className="text-[9px] uppercase font-bold tracking-widest text-teal-600 dark:text-teal-400 font-mono">Pillar #01: One Account</span>
                   <span className="text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 font-bold px-2 py-0.5 rounded font-mono">EDU & ACADEMY</span>
                 </div>
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Inertia Unfazed</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Earn XP climbing ranks via interactive, slide-by-slide programming, cybersecurity, and UI/UX roadmaps. Validate lessons with live sandboxes.
+                  The educational foundation. Build real-world skills, earn Duolingo-style XP, climb ranks, and mint credentials that unlock high-value contracts.
                 </p>
 
                 <ul className="space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
-                  <li className="flex items-center gap-1.5">✓ Duolingo-style XP Streaks</li>
-                  <li className="flex items-center gap-1.5">✓ Node compiler sandboxes</li>
-                  <li className="flex items-center gap-1.5">✓ Secured mastery QR-certs</li>
+                  <li className="flex items-center gap-1.5">✓ One-Account Synchronized Profile</li>
+                  <li className="flex items-center gap-1.5">✓ Interactive Slide-by-slide Lessons</li>
+                  <li className="flex items-center gap-1.5">✓ Verified mastery QR-credentials</li>
                 </ul>
               </div>
             </div>
@@ -231,18 +444,18 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
 
               <div className="p-5 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] uppercase font-bold tracking-widest text-indigo-600 dark:text-indigo-400 font-mono">Pillar #02</span>
+                  <span className="text-[9px] uppercase font-bold tracking-widest text-indigo-600 dark:text-indigo-400 font-mono">Pillar #02: Crypto Sync</span>
                   <span className="text-[10px] bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded font-mono">CONTRACTS & GIGS</span>
                 </div>
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Inertia Hustler</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Toggle between client and freelancer roles to publish contracts or secure remote gigs. Runs on smart skill compliance metrics automatically.
+                  The service exchange. Publish real contract gigs or bid on remote milestones using our secure, unified Escrow crypto payment ledger.
                 </p>
 
                 <ul className="space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
-                  <li className="flex items-center gap-1.5">✓ AI Skill compatibility scores</li>
-                  <li className="flex items-center gap-1.5">✓ Secure Escrow ledger lock</li>
-                  <li className="flex items-center gap-1.5">✓ Signed invoices frameworks</li>
+                  <li className="flex items-center gap-1.5">✓ Safe Simulated Escrow Locks</li>
+                  <li className="flex items-center gap-1.5">✓ Smart Skills Compatibility Checker</li>
+                  <li className="flex items-center gap-1.5">✓ Real-time stable balance syncs</li>
                 </ul>
               </div>
             </div>
@@ -270,18 +483,18 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
 
               <div className="p-5 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] uppercase font-bold tracking-widest text-teal-600 dark:text-teal-400 font-mono">Pillar #03</span>
-                  <span className="text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 font-bold px-2 py-0.5 rounded font-mono">African TRADE</span>
+                  <span className="text-[9px] uppercase font-bold tracking-widest text-teal-600 dark:text-teal-400 font-mono">Pillar #03: Market Possibilities</span>
+                  <span className="text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 font-bold px-2 py-0.5 rounded font-mono">WHOLESALE TRADE</span>
                 </div>
                 <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Inertia Stack</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Alibaba-inspired wholesale trade platform. Track nearby buyers, sellers, or regional warehouses inside our interactive Google Maps radius grid.
+                  The enterprise marketplace. Operate merchant storefronts, order wholesale agricultural/tech goods, and track nearby stores on our interactive Google Maps radius system.
                 </p>
 
                 <ul className="space-y-1 text-[11px] text-slate-500 dark:text-slate-400">
-                  <li className="flex items-center gap-1.5">✓ Interactive Google Maps Canvas</li>
-                  <li className="flex items-center gap-1.5">✓ Radius distance computations</li>
-                  <li className="flex items-center gap-1.5">✓ Multi-currency agricultural catalog</li>
+                  <li className="flex items-center gap-1.5">✓ Interactive Google Maps radius grid</li>
+                  <li className="flex items-center gap-1.5">✓ Cart with Checkout & Escrow deduction</li>
+                  <li className="flex items-center gap-1.5">✓ Stable ledger asset fulfillment</li>
                 </ul>
               </div>
             </div>

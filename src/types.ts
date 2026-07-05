@@ -128,6 +128,7 @@ export interface ChatMessage {
   encrypted: boolean;
   isVoice?: boolean;
   voiceDuration?: string;
+  voiceUrl?: string;
   read: boolean;
 }
 
