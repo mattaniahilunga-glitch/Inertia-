@@ -148,6 +148,8 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
   // Mobile money / USSD states
   const [depositPhone, setDepositPhone] = useState('');
   const [depositPhoneError, setDepositPhoneError] = useState('');
+  const [withdrawPhone, setWithdrawPhone] = useState('');
+  const [withdrawPhoneError, setWithdrawPhoneError] = useState('');
   const [ussdModalOpen, setUssdModalOpen] = useState(false);
   const [ussdCode, setUssdCode] = useState('');
   const [ussdStatus, setUssdStatus] = useState<'prompt' | 'sending' | 'success'>('prompt');
@@ -191,11 +193,12 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
     const amountNum = parseFloat(depositAmount);
     if (isNaN(amountNum) || amountNum <= 0) return;
 
+    if (!depositPhone.trim()) {
+      setDepositPhoneError('Account, card, or phone number is required.');
+      return;
+    }
+
     if (paymentProvider === 'MTN' || paymentProvider === 'Airtel') {
-      if (!depositPhone.trim()) {
-        setDepositPhoneError('Phone number is required for mobile wallets.');
-        return;
-      }
       // Simulating conversion from USD to UGX (shilling exchange rates of ~3700 per USD)
       const ugxAmount = Math.round(amountNum * 3700);
       let code = '';
@@ -220,7 +223,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
       amount: amountNum,
       currency: 'USD',
       status: 'Completed',
-      description: `Funded wallet via ${paymentProvider}`,
+      description: `Funded wallet via ${paymentProvider} (${depositPhone})`,
       timestamp: new Date().toISOString()
     };
 
@@ -231,6 +234,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
     });
 
     setDepositAmount('');
+    setDepositPhone('');
     setPaymentSuccess(true);
     setTimeout(() => setPaymentSuccess(false), 3000);
   };
@@ -274,6 +278,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
     setWithdrawError('');
+    setWithdrawPhoneError('');
     const amountNum = parseFloat(withdrawAmount);
     if (isNaN(amountNum) || amountNum <= 0) {
       setWithdrawError('Please enter a valid positive amount.');
@@ -281,6 +286,10 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
     }
     if (user.balance < amountNum) {
       setWithdrawError('Insufficient balance for this withdrawal.');
+      return;
+    }
+    if (!withdrawPhone.trim()) {
+      setWithdrawPhoneError('Recipient account, card, or phone number is required.');
       return;
     }
 
@@ -291,7 +300,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
       amount: amountNum,
       currency: 'USD',
       status: 'Completed',
-      description: `Withdrew funds via ${withdrawProvider}`,
+      description: `Withdrew funds via ${withdrawProvider} (${withdrawPhone})`,
       timestamp: new Date().toISOString()
     };
 
@@ -302,6 +311,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
     });
 
     setWithdrawAmount('');
+    setWithdrawPhone('');
     setWithdrawSuccess(true);
     setTimeout(() => setWithdrawSuccess(false), 3000);
   };
@@ -565,33 +575,45 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                     </select>
                   </div>
 
-                  {(paymentProvider === 'MTN' || paymentProvider === 'Airtel') && (
-                    <div className="space-y-1">
-                      <label className="block text-[11px] text-slate-500">
-                        {paymentProvider === 'Airtel' ? 'Airtel Money Number' : 'MTN MoMo Number'}
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="e.g. 0776918455"
-                        value={depositPhone}
-                        onChange={(e) => {
-                          setDepositPhone(e.target.value);
-                          setDepositPhoneError('');
-                        }}
-                        className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
-                      />
-                      {depositPhoneError && (
-                        <p className="text-[10px] text-rose-500 mt-0.5">{depositPhoneError}</p>
-                      )}
+                  <div className="space-y-1">
+                    <label className="block text-[11px] text-slate-500">
+                      {paymentProvider === 'Airtel'
+                        ? 'Airtel Money Number'
+                        : paymentProvider === 'MTN'
+                        ? 'MTN MoMo Number'
+                        : paymentProvider === 'Visa' || paymentProvider === 'Mastercard'
+                        ? 'Card Number (16-digit)'
+                        : 'Stripe / PayPal Account Email'}
+                    </label>
+                    <input
+                      type={paymentProvider === 'Airtel' || paymentProvider === 'MTN' ? 'tel' : paymentProvider === 'Visa' || paymentProvider === 'Mastercard' ? 'text' : 'email'}
+                      required
+                      placeholder={
+                        paymentProvider === 'Airtel' || paymentProvider === 'MTN'
+                          ? 'e.g. 0776918455'
+                          : paymentProvider === 'Visa' || paymentProvider === 'Mastercard'
+                          ? 'e.g. 4111 2222 3333 4444'
+                          : 'e.g. mattaniahilunga@gmail.com'
+                      }
+                      value={depositPhone}
+                      onChange={(e) => {
+                        setDepositPhone(e.target.value);
+                        setDepositPhoneError('');
+                      }}
+                      className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                    />
+                    {depositPhoneError && (
+                      <p className="text-[10px] text-rose-500 mt-0.5">{depositPhoneError}</p>
+                    )}
+                    {(paymentProvider === 'MTN' || paymentProvider === 'Airtel') && (
                       <p className="text-[9px] text-slate-400 leading-normal bg-slate-50 dark:bg-slate-900/30 p-1.5 rounded-md border border-slate-100 dark:border-slate-800">
                         Funds will route to the platform's merchant account:{' '}
                         <span className="font-bold text-slate-800 dark:text-slate-200 block font-mono mt-0.5">
                           {paymentProvider === 'Airtel' ? 'Airtel Pay: 0776918455' : 'MTN MoMo: 0782619455'}
                         </span>
                       </p>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   <button
                     type="submit"
@@ -649,6 +671,38 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                       <option value="MTN">MTN MoMo Payout</option>
                       <option value="Airtel">Airtel Money Payout</option>
                     </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-[11px] text-slate-500">
+                      {withdrawProvider === 'Airtel'
+                        ? 'Airtel Money Payout Number'
+                        : withdrawProvider === 'MTN'
+                        ? 'MTN MoMo Payout Number'
+                        : withdrawProvider === 'Visa'
+                        ? 'Card Number (16-digit)'
+                        : 'Payout Account Email / ID'}
+                    </label>
+                    <input
+                      type={withdrawProvider === 'Airtel' || withdrawProvider === 'MTN' ? 'tel' : withdrawProvider === 'Visa' ? 'text' : 'email'}
+                      required
+                      placeholder={
+                        withdrawProvider === 'Airtel' || withdrawProvider === 'MTN'
+                          ? 'e.g. 0776918455'
+                          : withdrawProvider === 'Visa'
+                          ? 'e.g. 4111 2222 3333 4444'
+                          : 'e.g. mattaniahilunga@gmail.com'
+                      }
+                      value={withdrawPhone}
+                      onChange={(e) => {
+                        setWithdrawPhone(e.target.value);
+                        setWithdrawPhoneError('');
+                      }}
+                      className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                    />
+                    {withdrawPhoneError && (
+                      <p className="text-[10px] text-rose-500 mt-0.5">{withdrawPhoneError}</p>
+                    )}
                   </div>
 
                   <button
