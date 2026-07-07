@@ -47,7 +47,7 @@ export default function Footer({ onOpenDeveloperConsole }: FooterProps) {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xl font-extrabold tracking-wider bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-400 bg-clip-text text-transparent">
-                INERTIA
+                CONTINUUM
               </span>
               <span className="text-[10px] uppercase font-mono tracking-widest text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-200 px-1.5 py-0.5 rounded font-bold">
                 v1.0.0
@@ -210,7 +210,7 @@ export default function Footer({ onOpenDeveloperConsole }: FooterProps) {
 
         <div className="pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-500 font-medium">
-            © 2026 INERTIA Corporation. Built with pride by{' '}
+            © 2026 CONTINUUM Corporation. Built with pride by{' '}
             <strong className="text-slate-600 font-bold">Mattaniah Ilunga</strong>. All Rights Reserved.
           </p>
           <div className="flex gap-4 items-center">

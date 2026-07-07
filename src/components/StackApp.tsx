@@ -49,7 +49,7 @@ const SELLER_DETAILS: {
     verification: 'KEBS Forestry Authenticated',
     responseTime: '< 24 hours'
   },
-  'Inertia Logistics Group': {
+  'Continuum Logistics Group': {
     description: 'Leading logistics & container freight partner across major African free trade corridors. Specialized in custom deep-sea port routing, refrigerated transit, and fast inter-city dispatch.',
     rating: 5.0,
     completedTrades: 14200,
@@ -69,11 +69,11 @@ const SELLER_DETAILS: {
 
 const getSellerDetail = (storeName: string) => {
   return SELLER_DETAILS[storeName] || {
-    description: `Independent merchant operating on Inertia Stack platform. Committed to premium regional trade, secure logistics tracking, and local community growth.`,
+    description: `Independent merchant operating on Continuum Stack platform. Committed to premium regional trade, secure logistics tracking, and local community growth.`,
     rating: 5.0,
     completedTrades: 1,
     category: 'Verified Merchant',
-    verification: 'Inertia Protocol Insured',
+    verification: 'Continuum Protocol Insured',
     responseTime: '< 1 hour'
   };
 };
@@ -224,12 +224,12 @@ export default function StackApp({ user, onUpdateUser, onAddTransaction }: Stack
         amount: totalCost,
         currency: 'USD',
         status: 'Completed',
-        description: `B2B Purchase: ${cart.length} catalog items from Inertia Stack.`,
+        description: `B2B Purchase: ${cart.length} catalog items from Continuum Stack.`,
         timestamp: new Date().toISOString()
       });
     }
 
-    setCheckoutSuccess(`Checkout Complete! $${totalCost.toFixed(2)} paid from Inertia Wallet.`);
+    setCheckoutSuccess(`Checkout Complete! $${totalCost.toFixed(2)} paid from Continuum Wallet.`);
     setCart([]);
     setIsCartOpen(false);
     
@@ -320,7 +320,7 @@ export default function StackApp({ user, onUpdateUser, onAddTransaction }: Stack
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <ShoppingBag className="text-teal-500 w-5 h-5" />
-            Inertia Stack: African Enterprise & Logistics Hub
+            Continuum Stack: African Enterprise & Logistics Hub
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Build wholesale store models, source organic agricultural goods, and utilize Google Maps integration to track regional fulfillment warehouses.
@@ -873,7 +873,7 @@ export default function StackApp({ user, onUpdateUser, onAddTransaction }: Stack
                         <span className="font-bold font-mono">{cart.reduce((sum, item) => sum + item.quantity, 0)} units</span>
                       </div>
                       <div className="flex justify-between text-xs text-slate-500">
-                        <span>Inertia Wallet Balance</span>
+                        <span>Continuum Wallet Balance</span>
                         <span className="font-mono text-indigo-500 dark:text-indigo-400">${user.balance.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-sm pt-2 border-t border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">
@@ -890,7 +890,7 @@ export default function StackApp({ user, onUpdateUser, onAddTransaction }: Stack
                       <span>Confirm & Checkout Securely</span>
                     </button>
                     <p className="text-[9px] text-slate-400 text-center font-mono">
-                      Payments held in Inertia Escrow until shipping coordinates verified on Google Maps.
+                      Payments held in Continuum Escrow until shipping coordinates verified on Google Maps.
                     </p>
                   </div>
                 )}

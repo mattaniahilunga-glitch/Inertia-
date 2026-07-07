@@ -25,7 +25,7 @@ import GetStarted from './components/GetStarted';
 export default function App() {
   // Shared Core States
   const [user, setUser] = useState<UserProfile>(() => {
-    const cachedUser = localStorage.getItem('inertia-active-user');
+    const cachedUser = localStorage.getItem('continuum-active-user');
     if (cachedUser) {
       try {
         return JSON.parse(cachedUser);
@@ -37,7 +37,7 @@ export default function App() {
   });
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    return sessionStorage.getItem('inertia-session-active') === 'true';
+    return sessionStorage.getItem('continuum-session-active') === 'true';
   });
 
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
@@ -72,7 +72,7 @@ export default function App() {
 
   // Apply dark class on theme toggles
   useEffect(() => {
-    const savedTheme = localStorage.getItem('inertia-theme');
+    const savedTheme = localStorage.getItem('continuum-theme');
     if (savedTheme === 'light') {
       setDarkMode(false);
       document.documentElement.classList.remove('dark');
@@ -90,11 +90,11 @@ export default function App() {
   const toggleTheme = () => {
     if (darkMode) {
       document.documentElement.classList.remove('dark');
-      localStorage.setItem('inertia-theme', 'light');
+      localStorage.setItem('continuum-theme', 'light');
       setDarkMode(false);
     } else {
       document.documentElement.classList.add('dark');
-      localStorage.setItem('inertia-theme', 'dark');
+      localStorage.setItem('continuum-theme', 'dark');
       setDarkMode(true);
     }
   };
@@ -105,23 +105,23 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem('inertia-session-active');
-    localStorage.removeItem('inertia-active-user');
+    sessionStorage.removeItem('continuum-session-active');
+    localStorage.removeItem('continuum-active-user');
     setIsLoggedIn(false);
     setActiveTab('home');
   };
 
   const handleUpdateUser = (updatedUser: UserProfile) => {
     setUser(updatedUser);
-    localStorage.setItem('inertia-active-user', JSON.stringify(updatedUser));
+    localStorage.setItem('continuum-active-user', JSON.stringify(updatedUser));
     
     // Also update in registered list so edits persist!
-    const registeredUsersJson = localStorage.getItem('inertia-registered-users');
+    const registeredUsersJson = localStorage.getItem('continuum-registered-users');
     if (registeredUsersJson) {
       try {
         const usersMap = JSON.parse(registeredUsersJson);
         usersMap[updatedUser.email.toLowerCase()] = updatedUser;
-        localStorage.setItem('inertia-registered-users', JSON.stringify(usersMap));
+        localStorage.setItem('continuum-registered-users', JSON.stringify(usersMap));
       } catch (e) {
         console.error('Error updating persisted user map', e);
       }
@@ -162,10 +162,10 @@ export default function App() {
                 className="flex items-center gap-2 cursor-pointer group text-start focus:outline-none flex-shrink-0"
               >
                 <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-950 font-extrabold text-base tracking-tighter group-hover:scale-105 transition-transform">
-                  I
+                  C
                 </div>
                 <div>
-                  <h1 className="text-base font-black tracking-tight text-slate-950 dark:text-white leading-none">INERTIA</h1>
+                  <h1 className="text-base font-black tracking-tight text-slate-950 dark:text-white leading-none">CONTINUUM</h1>
                   <span className="text-[9px] uppercase tracking-wider font-mono text-slate-400 font-bold hidden sm:inline">Start. Learn. Trade</span>
                 </div>
               </button>

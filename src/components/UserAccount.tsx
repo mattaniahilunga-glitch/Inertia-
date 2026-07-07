@@ -145,6 +145,14 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
   const [withdrawSuccess, setWithdrawSuccess] = useState(false);
   const [withdrawError, setWithdrawError] = useState('');
   
+  // Mobile money / USSD states
+  const [depositPhone, setDepositPhone] = useState('');
+  const [depositPhoneError, setDepositPhoneError] = useState('');
+  const [ussdModalOpen, setUssdModalOpen] = useState(false);
+  const [ussdCode, setUssdCode] = useState('');
+  const [ussdStatus, setUssdStatus] = useState<'prompt' | 'sending' | 'success'>('prompt');
+  const [ussdPin, setUssdPin] = useState('');
+  
   // Crypto Sync engine
   const [isSyncing, setIsSyncing] = useState(false);
   const [encryptionKey, setEncryptionKey] = useState<string>('');
@@ -169,7 +177,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
   useEffect(() => {
     if (!encryptionKey) {
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-      let result = 'inertia-sec-key-';
+      let result = 'continuum-sec-key-';
       for (let i = 0; i < 24; i++) {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
       }
@@ -179,10 +187,33 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
 
   const handleDeposit = (e: React.FormEvent) => {
     e.preventDefault();
+    setDepositPhoneError('');
     const amountNum = parseFloat(depositAmount);
     if (isNaN(amountNum) || amountNum <= 0) return;
 
-    // Build deposit transaction
+    if (paymentProvider === 'MTN' || paymentProvider === 'Airtel') {
+      if (!depositPhone.trim()) {
+        setDepositPhoneError('Phone number is required for mobile wallets.');
+        return;
+      }
+      // Simulating conversion from USD to UGX (shilling exchange rates of ~3700 per USD)
+      const ugxAmount = Math.round(amountNum * 3700);
+      let code = '';
+      if (paymentProvider === 'Airtel') {
+        // Send money to Website Airtel merchant: 0776918455
+        code = `*185*1*1*0776918455*${ugxAmount}*1#`;
+      } else {
+        // Send money to Website MTN merchant
+        code = `*165*1*1*0782619455*${ugxAmount}*1#`;
+      }
+      setUssdCode(code);
+      setUssdStatus('prompt');
+      setUssdPin('');
+      setUssdModalOpen(true);
+      return;
+    }
+
+    // Build deposit transaction for traditional payments
     const newTx: Transaction = {
       id: `tx-${Date.now()}`,
       type: 'deposit',
@@ -202,6 +233,42 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
     setDepositAmount('');
     setPaymentSuccess(true);
     setTimeout(() => setPaymentSuccess(false), 3000);
+  };
+
+  const handleConfirmUssd = () => {
+    if (!ussdPin || ussdPin.length < 4) {
+      alert('Please enter your 4-digit Mobile Money PIN to authorize the simulated USSD push.');
+      return;
+    }
+    setUssdStatus('sending');
+    
+    setTimeout(() => {
+      const amountNum = parseFloat(depositAmount);
+      const newTx: Transaction = {
+        id: `tx-${Date.now()}`,
+        type: 'deposit',
+        amount: amountNum,
+        currency: 'USD',
+        status: 'Completed',
+        description: `Funded wallet via ${paymentProvider} (${depositPhone}) [USSD Push Sync]`,
+        timestamp: new Date().toISOString()
+      };
+
+      onAddTransaction(newTx);
+      onUpdateUser({
+        ...user,
+        balance: user.balance + amountNum
+      });
+
+      setUssdStatus('success');
+      setDepositAmount('');
+      setDepositPhone('');
+      setPaymentSuccess(true);
+      setTimeout(() => {
+        setUssdModalOpen(false);
+        setPaymentSuccess(false);
+      }, 2000);
+    }, 2000);
   };
 
   const handleWithdraw = (e: React.FormEvent) => {
@@ -394,7 +461,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-900 text-center">
-                <span className="text-[10px] text-slate-400">Unlock Bronze, Gold, and Platinum achievements inside Inertia Unfazed.</span>
+                <span className="text-[10px] text-slate-400">Unlock Bronze, Gold, and Platinum achievements inside Continuum Unfazed.</span>
               </div>
             </div>
 
@@ -411,7 +478,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                     </span>
                   ))}
                   {user.skills.length === 0 && (
-                    <span className="text-slate-400 italic">No verified skills yet. Start earning XP in Inertia Unfazed!</span>
+                    <span className="text-slate-400 italic">No verified skills yet. Start earning XP in Continuum Unfazed!</span>
                   )}
                 </div>
               </div>
@@ -441,7 +508,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
               <div>
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="text-xs uppercase text-indigo-300 font-mono tracking-wider">Inertia Universal Balance</span>
+                    <span className="text-xs uppercase text-indigo-300 font-mono tracking-wider">Continuum Universal Balance</span>
                     <h3 className="text-3xl font-extrabold tracking-tight mt-1 text-white">
                       ${user.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </h3>
@@ -497,6 +564,34 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                       <option value="Airtel">Airtel Money (Africa Regional)</option>
                     </select>
                   </div>
+
+                  {(paymentProvider === 'MTN' || paymentProvider === 'Airtel') && (
+                    <div className="space-y-1">
+                      <label className="block text-[11px] text-slate-500">
+                        {paymentProvider === 'Airtel' ? 'Airtel Money Number' : 'MTN MoMo Number'}
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="e.g. 0776918455"
+                        value={depositPhone}
+                        onChange={(e) => {
+                          setDepositPhone(e.target.value);
+                          setDepositPhoneError('');
+                        }}
+                        className="w-full text-xs px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white focus:outline-none glass-input"
+                      />
+                      {depositPhoneError && (
+                        <p className="text-[10px] text-rose-500 mt-0.5">{depositPhoneError}</p>
+                      )}
+                      <p className="text-[9px] text-slate-400 leading-normal bg-slate-50 dark:bg-slate-900/30 p-1.5 rounded-md border border-slate-100 dark:border-slate-800">
+                        Funds will route to the platform's merchant account:{' '}
+                        <span className="font-bold text-slate-800 dark:text-slate-200 block font-mono mt-0.5">
+                          {paymentProvider === 'Airtel' ? 'Airtel Pay: 0776918455' : 'MTN MoMo: 0782619455'}
+                        </span>
+                      </p>
+                    </div>
+                  )}
 
                   <button
                     type="submit"
@@ -698,7 +793,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                     <button
                       onClick={() => {
                         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-                        let result = 'inertia-sec-key-';
+                        let result = 'continuum-sec-key-';
                         for (let i = 0; i < 24; i++) {
                           result += characters.charAt(Math.floor(Math.random() * characters.length));
                         }
@@ -759,7 +854,7 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
               <div className="text-center mb-6">
                 <span className="text-xs uppercase tracking-wider font-mono text-indigo-500 font-bold">Secure Gateway Access</span>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-1">
-                  {authMode === 'signin' ? 'Sign In to INERTIA' : authMode === 'signup' ? 'Create Unified Account' : 'Forgot Password'}
+                  {authMode === 'signin' ? 'Sign In to CONTINUUM' : authMode === 'signup' ? 'Create Unified Account' : 'Forgot Password'}
                 </h3>
               </div>
 
@@ -979,6 +1074,133 @@ export default function UserAccount({ user, onUpdateUser, transactions, onAddTra
                   Done
                 </button>
               </div>
+            </motion.div>
+          </div>
+        )}
+
+        {ussdModalOpen && (
+          <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="glass-card max-w-sm w-full p-6 rounded-[24px] shadow-2xl relative bg-slate-900 border border-slate-800 text-white overflow-hidden"
+            >
+              <button 
+                onClick={() => setUssdModalOpen(false)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white text-xs cursor-pointer"
+                disabled={ussdStatus === 'sending'}
+              >
+                ✕
+              </button>
+
+              {ussdStatus === 'prompt' && (
+                <div className="space-y-4">
+                  <div className="text-center pb-2 border-b border-slate-800">
+                    <div className="inline-flex items-center justify-center p-2.5 rounded-full bg-teal-500/10 text-teal-400 mb-2">
+                      <Smartphone className="w-6 h-6 animate-pulse" />
+                    </div>
+                    <h3 className="text-sm font-bold tracking-wider font-mono text-teal-400 uppercase">
+                      Simulated USSD Push Request
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                      ISP Gateway: {paymentProvider === 'Airtel' ? 'Airtel Money Uganda' : 'MTN Mobile Money'}
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 font-mono text-[11px] space-y-2">
+                    <div className="flex justify-between text-slate-400">
+                      <span>Source number:</span>
+                      <span className="text-white font-bold">{depositPhone}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-400">
+                      <span>Recipient (Website):</span>
+                      <span className="text-teal-400 font-bold">
+                        {paymentProvider === 'Airtel' ? '0776918455 (Airtel)' : '0782619455 (MTN)'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-slate-400">
+                      <span>USD Amount:</span>
+                      <span className="text-white">${parseFloat(depositAmount).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-400 pt-1.5 border-t border-slate-850">
+                      <span>UGX Value (Est.):</span>
+                      <span className="text-yellow-400 font-bold">
+                        {(parseFloat(depositAmount) * 3700).toLocaleString()} UGX
+                      </span>
+                    </div>
+                    <div className="pt-2 border-t border-slate-850 text-slate-300 leading-relaxed text-[10px]">
+                      <span className="text-teal-400 font-bold">Dial Code Reference:</span>
+                      <span className="block mt-1 text-[11px] select-all text-teal-300 font-semibold bg-slate-950 p-1.5 rounded border border-teal-950 break-all">
+                        {ussdCode}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-[11px] text-slate-400 font-mono">
+                      Enter your 4-Digit Mobile Wallet PIN to authorize:
+                    </label>
+                    <input
+                      type="password"
+                      maxLength={4}
+                      value={ussdPin}
+                      onChange={(e) => setUssdPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="••••"
+                      className="w-full text-center text-lg tracking-[0.5em] font-mono py-2 bg-slate-950 border border-slate-800 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      onClick={() => setUssdModalOpen(false)}
+                      className="flex-1 py-2 rounded-lg border border-slate-800 hover:bg-slate-850 text-xs font-semibold font-mono text-slate-300 cursor-pointer transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleConfirmUssd}
+                      className="flex-1 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-xs font-bold font-mono text-white cursor-pointer transition-colors"
+                    >
+                      Authorize Push
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {ussdStatus === 'sending' && (
+                <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 font-mono">
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-full border-4 border-teal-500/20 border-t-teal-400 animate-spin" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-teal-400">CONNECTING TO GATEWAY</h4>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Broadcasting USSD transaction packet...
+                    </p>
+                  </div>
+                  <div className="text-[10px] text-slate-500 max-w-xs leading-normal">
+                    Secure handshake initiated with {paymentProvider} ISP base station node. Verifying wallet balance ledger and authorizing merchant route to {paymentProvider === 'Airtel' ? '0776918455' : '0782619455'}...
+                  </div>
+                </div>
+              )}
+
+              {ussdStatus === 'success' && (
+                <div className="py-10 text-center space-y-4 font-mono">
+                  <div className="inline-flex items-center justify-center p-3 rounded-full bg-teal-500/10 text-teal-400">
+                    <CheckCircle2 className="w-10 h-10 animate-bounce" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-teal-400 uppercase">Transaction Confirmed</h4>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Platform Account {paymentProvider === 'Airtel' ? '0776918455' : '0782619455'} credited successfully.
+                    </p>
+                  </div>
+                  <p className="text-xs text-slate-300 max-w-xs leading-normal bg-slate-950/60 p-3 rounded-lg border border-slate-800">
+                    Your Continuum wallet balance was successfully synced with a deposit of <span className="text-teal-400 font-bold">${parseFloat(depositAmount).toFixed(2)} USD</span>.
+                  </p>
+                </div>
+              )}
             </motion.div>
           </div>
         )}

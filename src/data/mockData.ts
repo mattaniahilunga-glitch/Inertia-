@@ -201,7 +201,7 @@ export const INITIAL_JOBS: Job[] = [
     type: 'Contract',
     category: 'Web Development',
     skillsRequired: ['React', 'TypeScript', 'TailwindCSS'],
-    description: 'We need an experienced developer to redesign our high-converting checkout flow. Integrate responsive maps filtering and custom local payments. Must have completed Web Architecture and scaling modules inside Inertia Unfazed.',
+    description: 'We need an experienced developer to redesign our high-converting checkout flow. Integrate responsive maps filtering and custom local payments. Must have completed Web Architecture and scaling modules inside Continuum Unfazed.',
     postedAt: '2026-07-02T10:00:00Z',
     matchedScore: 92
   },
@@ -231,7 +231,7 @@ export const INITIAL_JOBS: Job[] = [
     type: 'Gig work',
     category: 'Graphic Design',
     skillsRequired: ['UI/UX', 'Graphic Design'],
-    description: 'We need a set of vector illustrations representing our high-quality African fabrics. These illustrations will be displayed on local product stores inside Inertia Stack. Interactive visual feedback required.',
+    description: 'We need a set of vector illustrations representing our high-quality African fabrics. These illustrations will be displayed on local product stores inside Continuum Stack. Interactive visual feedback required.',
     postedAt: '2026-07-03T18:00:00Z',
     matchedScore: 78
   }
@@ -288,8 +288,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
   {
     id: 'stack-warehouse-001',
-    title: 'Inertia Stack Fulfillment Center - West',
-    storeName: 'Inertia Logistics Group',
+    title: 'Continuum Stack Fulfillment Center - West',
+    storeName: 'Continuum Logistics Group',
     price: 0,
     currency: 'USD',
     rating: 5.0,
@@ -325,7 +325,7 @@ export const INITIAL_POSTS: SocialPost[] = [
     id: 'post-1',
     author: 'Kofi Mensah',
     authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-    content: 'Just launched my first product store on Inertia Stack! 🎉 Sourcing handwoven baskets directly from our cooperative in Kumasi. The integrated Google Maps nearby search makes local pickups incredibly seamless. Thanks to the Web Scaling lessons on Inertia Unfazed, I successfully built my inventory API!',
+    content: 'Just launched my first product store on Continuum Stack! 🎉 Sourcing handwoven baskets directly from our cooperative in Kumasi. The integrated Google Maps nearby search makes local pickups incredibly seamless. Thanks to the Web Scaling lessons on Continuum Unfazed, I successfully built my inventory API!',
     timestamp: '2026-07-03T20:15:00Z',
     likes: 42,
     hasLiked: false,
@@ -344,7 +344,7 @@ export const INITIAL_POSTS: SocialPost[] = [
     id: 'post-2',
     author: 'Eshe Diallo',
     authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-    content: 'Security Alert: For everyone building smart contracts and payment apps inside Inertia Hustler, make sure to parameterize all external database inputs! E2EE key pairs should be stored in browser SessionStorage and never printed inside telemetry console logs.',
+    content: 'Security Alert: For everyone building smart contracts and payment apps inside Continuum Hustler, make sure to parameterize all external database inputs! E2EE key pairs should be stored in browser SessionStorage and never printed inside telemetry console logs.',
     timestamp: '2026-07-04T01:30:00Z',
     likes: 29,
     hasLiked: false,
@@ -356,7 +356,7 @@ export const INITIAL_POSTS: SocialPost[] = [
 export const INITIAL_CHANNELS: ChatChannel[] = [
   {
     id: 'chan-general',
-    name: 'Inertia Tech Community',
+    name: 'Continuum Tech Community',
     type: 'community',
     lastMessageAt: '2026-07-04T03:00:00Z',
     unreadCount: 0,
@@ -364,9 +364,9 @@ export const INITIAL_CHANNELS: ChatChannel[] = [
       {
         id: 'msg-1',
         senderId: 'sys-bot',
-        senderName: 'Inertia Bot',
+        senderName: 'Continuum Bot',
         senderAvatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
-        content: 'Welcome to the unified Inertia community channel! Learn, Hustle, Build, and Trade secure here.',
+        content: 'Welcome to the unified Continuum community channel! Learn, Hustle, Build, and Trade secure here.',
         timestamp: '2026-07-04T01:00:00Z',
         encrypted: false,
         read: true

@@ -165,7 +165,7 @@ export default function UnfazedApp({ user, onUpdateUser }: UnfazedAppProps) {
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <BookOpen className="text-teal-500 w-5 h-5" />
-            Inertia Unfazed: Gamified Skillshare Academy
+            Continuum Unfazed: Gamified Skillshare Academy
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Build secure verified skills, gain XP levels, pass coding sandbox puzzles, and generate downloadable certificates.
@@ -306,7 +306,7 @@ export default function UnfazedApp({ user, onUpdateUser }: UnfazedAppProps) {
                   </div>
 
                   <div>
-                    <span className="text-xs uppercase tracking-widest font-mono text-teal-500 font-bold">Inertia Academy Verification Certificate</span>
+                    <span className="text-xs uppercase tracking-widest font-mono text-teal-500 font-bold">Continuum Academy Verification Certificate</span>
                     <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-2">
                       CERTIFICATE OF VERIFIED MASTERY
                     </h2>

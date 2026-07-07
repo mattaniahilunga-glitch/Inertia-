@@ -110,7 +110,7 @@ export default function HustlerApp({ user, onUpdateUser, transactions, onAddTran
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Briefcase className="text-indigo-500 w-5 h-5" />
-            Inertia Hustler: Global Gigs & Escrow Engine
+            Continuum Hustler: Global Gigs & Escrow Engine
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Browse remote contracts, physical installations, or bid for full-time work with automated skill compatibility evaluations.
@@ -351,7 +351,7 @@ export default function HustlerApp({ user, onUpdateUser, transactions, onAddTran
                 <ShieldAlert className="w-4 h-4 text-teal-500" /> Active Escrow Ledger Locks
               </h3>
               <p className="text-[11px] text-slate-400 mb-4 leading-relaxed">
-                Inertia Hustler runs on a zero-trust escrow lock scheme. Clients lock full contract values upon creating roles, which are safely compiled and dispatched to workers only upon mutual cryptographic signoff.
+                Continuum Hustler runs on a zero-trust escrow lock scheme. Clients lock full contract values upon creating roles, which are safely compiled and dispatched to workers only upon mutual cryptographic signoff.
               </p>
 
               <div className="space-y-2 max-h-60 overflow-y-auto">

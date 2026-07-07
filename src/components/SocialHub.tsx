@@ -21,7 +21,7 @@ interface SocialHubProps {
 export default function SocialHub({ user }: SocialHubProps) {
   const [posts, setPosts] = useState<SocialPost[]>(() => {
     try {
-      const saved = localStorage.getItem('inertia_social_posts');
+      const saved = localStorage.getItem('continuum_social_posts');
       return saved ? JSON.parse(saved) : INITIAL_POSTS;
     } catch (e) {
       return INITIAL_POSTS;
@@ -30,7 +30,7 @@ export default function SocialHub({ user }: SocialHubProps) {
 
   const [channels, setChannels] = useState<ChatChannel[]>(() => {
     try {
-      const saved = localStorage.getItem('inertia_social_channels');
+      const saved = localStorage.getItem('continuum_social_channels');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -52,7 +52,7 @@ export default function SocialHub({ user }: SocialHubProps) {
   // Persist posts and channels on changes
   useEffect(() => {
     try {
-      localStorage.setItem('inertia_social_posts', JSON.stringify(posts));
+      localStorage.setItem('continuum_social_posts', JSON.stringify(posts));
     } catch (e) {
       console.error('Error persisting social posts', e);
     }
@@ -60,7 +60,7 @@ export default function SocialHub({ user }: SocialHubProps) {
 
   useEffect(() => {
     try {
-      localStorage.setItem('inertia_social_channels', JSON.stringify(channels));
+      localStorage.setItem('continuum_social_channels', JSON.stringify(channels));
     } catch (e) {
       console.error('Error persisting chat channels', e);
     }
@@ -485,7 +485,7 @@ export default function SocialHub({ user }: SocialHubProps) {
   };
 
   const handleReportUser = (authorName: string) => {
-    setToast(`Thank you for keeping Inertia safe. A secure diagnostics report regarding user '${authorName}' has been encrypted and sent to moderation teams under mattaniah.ilunga@email.com.`);
+    setToast(`Thank you for keeping Continuum safe. A secure diagnostics report regarding user '${authorName}' has been encrypted and sent to moderation teams under mattaniah.ilunga@email.com.`);
     setTimeout(() => setToast(null), 6000);
   };
 
@@ -563,7 +563,7 @@ export default function SocialHub({ user }: SocialHubProps) {
         {
           id: `msg-welcome-${Date.now()}`,
           senderId: 'sys-bot',
-          senderName: 'Inertia Bot',
+          senderName: 'Continuum Bot',
           senderAvatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
           content: newChannelType === 'direct' 
             ? `Secure End-to-End Encrypted session established with ${newChannelName}.` 

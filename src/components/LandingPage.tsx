@@ -41,9 +41,9 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
 
   // Automatic smart recommendation based on profile stats if quiz hasn't been taken
   const getAutoRecommend = () => {
-    if (userSkillsCount === 0) return { id: 'unfazed', label: 'Inertia Unfazed (Recommended)', desc: 'Start earning XP and learning coding/security skills!' };
-    if (userBalance > 200) return { id: 'stack', label: 'Inertia Stack (Recommended)', desc: 'Leverage your balance to establish global African storefronts!' };
-    return { id: 'hustler', label: 'Inertia Hustler (Recommended)', desc: 'Bid for high-budget contracts mapping to your verified skills!' };
+    if (userSkillsCount === 0) return { id: 'unfazed', label: 'Continuum Unfazed (Recommended)', desc: 'Start earning XP and learning coding/security skills!' };
+    if (userBalance > 200) return { id: 'stack', label: 'Continuum Stack (Recommended)', desc: 'Leverage your balance to establish global African storefronts!' };
+    return { id: 'hustler', label: 'Continuum Hustler (Recommended)', desc: 'Bid for high-budget contracts mapping to your verified skills!' };
   };
 
   const autoRec = getAutoRecommend();
@@ -73,7 +73,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
           </h1>
 
           <p className="text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed">
-            Inertia is a unified startup ecosystem bridging premium interactive skill acquisition, high-integrity freelance contract matching, and local geolocation trade channels across Africa.
+            Continuum is a unified startup ecosystem bridging premium interactive skill acquisition, high-integrity freelance contract matching, and local geolocation trade channels across Africa.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
@@ -115,7 +115,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
             {!recommendationResult ? (
               <div className="space-y-4">
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Our system evaluates your experience profile to recommend the optimal initial launchpad inside Inertia. Answer these three quick diagnostic indicators:
+                  Our system evaluates your experience profile to recommend the optimal initial launchpad inside Continuum. Answer these three quick diagnostic indicators:
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <button
@@ -149,7 +149,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">
                   Recommended Gateway:{' '}
                   <span className="text-teal-600 dark:text-teal-400">
-                    {recommendationResult === 'unfazed' ? 'Inertia Unfazed' : recommendationResult === 'hustler' ? 'Inertia Hustler' : 'Inertia Stack'}
+                    {recommendationResult === 'unfazed' ? 'Continuum Unfazed' : recommendationResult === 'hustler' ? 'Continuum Hustler' : 'Continuum Stack'}
                   </span>
                 </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
@@ -235,7 +235,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                     One account across Unfazed, Hustler, and Stack
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Instead of fragmenting your professional and educational goals across unrelated sites, Inertia pools your progress under a single profile. Your learning achievements in Inertia Unfazed unlock premium contract tiers in Inertia Hustler, and your client ratings reinforce your marketplace reputation on Inertia Stack automatically.
+                    Instead of fragmenting your professional and educational goals across unrelated sites, Continuum pools your progress under a single profile. Your learning achievements in Continuum Unfazed unlock premium contract tiers in Continuum Hustler, and your client ratings reinforce your marketplace reputation on Continuum Stack automatically.
                   </p>
                   <div className="grid grid-cols-3 gap-3 pt-1">
                     <div className="p-2 bg-slate-50/50 dark:bg-slate-900/40 rounded-lg text-center border border-slate-200/50 dark:border-slate-800/80">
@@ -294,7 +294,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                     One secure stable balance sync across the platform
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                    Your stable balance is secured by our unified, locally simulated ledger database. When you unlock tasks, execute contracts in Inertia Hustler, or complete multi-item orders in Inertia Stack, the secure balance ledger updates globally across all sub-apps in real time.
+                    Your stable balance is secured by our unified, locally simulated ledger database. When you unlock tasks, execute contracts in Continuum Hustler, or complete multi-item orders in Continuum Stack, the secure balance ledger updates globally across all sub-apps in real time.
                   </p>
                   <ul className="grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-500 dark:text-slate-400">
                     <li className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">⚡ Instant balance crossovers</li>
@@ -314,7 +314,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                   <div className="space-y-1 text-[10px] font-mono">
                     <div className="flex justify-between text-slate-400">
                       <span>Ledger Account:</span>
-                      <span className="text-white font-bold">Inertia Stable USD</span>
+                      <span className="text-white font-bold">Continuum Stable USD</span>
                     </div>
                     <div className="flex justify-between text-slate-400">
                       <span>Network State:</span>
@@ -370,7 +370,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                       <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 text-[10px] font-bold font-mono">03</span>
                       <div>
                         <strong className="text-slate-800 dark:text-slate-200">Launch Bulk Trade:</strong>
-                        <span className="text-slate-500 dark:text-slate-400 ml-1 text-[11px]">Deploy earned capital directly to operate wholesale storefronts, fulfill bulk orders, and trade via interactive map routing on Inertia Stack.</span>
+                        <span className="text-slate-500 dark:text-slate-400 ml-1 text-[11px]">Deploy earned capital directly to operate wholesale storefronts, fulfill bulk orders, and trade via interactive map routing on Continuum Stack.</span>
                       </div>
                     </div>
                   </div>
@@ -392,7 +392,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          {/* Card 1: Inertia Unfazed */}
+          {/* Card 1: Continuum Unfazed */}
           <div className="glass-card glass-card-hover rounded-[32px] overflow-hidden shadow-xs flex flex-col justify-between group border-b-4 border-b-blue-500">
             <div>
               <div className="h-44 bg-slate-100/30 dark:bg-slate-900/10 relative overflow-hidden flex items-center justify-center p-6">
@@ -408,7 +408,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                   <span className="text-[9px] uppercase font-bold tracking-widest text-teal-600 dark:text-teal-400 font-mono">Pillar #01: One Account</span>
                   <span className="text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 font-bold px-2 py-0.5 rounded font-mono">EDU & ACADEMY</span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Inertia Unfazed</h3>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Continuum Unfazed</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   The educational foundation. Build real-world skills, earn Duolingo-style XP, climb ranks, and mint credentials that unlock high-value contracts.
                 </p>
@@ -432,7 +432,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
             </div>
           </div>
 
-          {/* Card 2: Inertia Hustler */}
+          {/* Card 2: Continuum Hustler */}
           <div className="glass-card glass-card-hover rounded-[32px] overflow-hidden shadow-xs flex flex-col justify-between group border-b-4 border-b-purple-500">
             <div>
               <div className="h-44 bg-slate-100/30 dark:bg-slate-900/10 relative overflow-hidden flex items-center justify-center p-6">
@@ -447,7 +447,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                   <span className="text-[9px] uppercase font-bold tracking-widest text-indigo-600 dark:text-indigo-400 font-mono">Pillar #02: Crypto Sync</span>
                   <span className="text-[10px] bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded font-mono">CONTRACTS & GIGS</span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Inertia Hustler</h3>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Continuum Hustler</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   The service exchange. Publish real contract gigs or bid on remote milestones using our secure, unified Escrow crypto payment ledger.
                 </p>
@@ -471,7 +471,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
             </div>
           </div>
 
-          {/* Card 3: Inertia Stack */}
+          {/* Card 3: Continuum Stack */}
           <div className="glass-card glass-card-hover rounded-[32px] overflow-hidden shadow-xs flex flex-col justify-between group border-b-4 border-b-emerald-500">
             <div>
               <div className="h-44 bg-slate-100/30 dark:bg-slate-900/10 relative overflow-hidden flex items-center justify-center p-6">
@@ -486,7 +486,7 @@ export default function LandingPage({ onLaunchProduct, userSkillsCount, userBala
                   <span className="text-[9px] uppercase font-bold tracking-widest text-teal-600 dark:text-teal-400 font-mono">Pillar #03: Market Possibilities</span>
                   <span className="text-[10px] bg-teal-500/15 text-teal-600 dark:text-teal-400 font-bold px-2 py-0.5 rounded font-mono">WHOLESALE TRADE</span>
                 </div>
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Inertia Stack</h3>
+                <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">Continuum Stack</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   The enterprise marketplace. Operate merchant storefronts, order wholesale agricultural/tech goods, and track nearby stores on our interactive Google Maps radius system.
                 </p>

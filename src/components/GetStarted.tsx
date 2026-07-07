@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   User, Mail, Lock, ShieldCheck, Sparkles, AlertTriangle, 
-  CheckCircle2, Fingerprint, Compass, Info, Upload, Image, ChevronRight, ArrowRight
+  CheckCircle2, Fingerprint, Compass, Info, Upload, Image, ChevronRight, ArrowRight,
+  Chrome, Github, Apple
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { INITIAL_USER } from '../data/mockData';
@@ -37,19 +38,94 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
   const [selectedAvatar, setSelectedAvatar] = useState<string>(PRESET_AVATARS[0].url);
   const [customAvatarUrl, setCustomAvatarUrl] = useState<string>('');
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [socialLoading, setSocialLoading] = useState<'google' | 'apple' | 'github' | null>(null);
+
+  const handleSocialLogin = (provider: 'google' | 'apple' | 'github') => {
+    setError('');
+    setSuccess('');
+    setSocialLoading(provider);
+
+    setTimeout(() => {
+      let socialEmail = '';
+      let socialUser = '';
+      let socialAvatar = '';
+      let socialRole = 'Systems Architect';
+
+      if (provider === 'google') {
+        socialEmail = 'mattaniahilunga@gmail.com';
+        socialUser = 'mattaniah_google';
+        socialAvatar = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150';
+        socialRole = 'Systems Architect';
+      } else if (provider === 'apple') {
+        socialEmail = 'mattaniah.ilunga@icloud.com';
+        socialUser = 'mattaniah_apple';
+        socialAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
+        socialRole = 'Freelancer';
+      } else {
+        socialEmail = 'mattaniah.git@github.com';
+        socialUser = 'mattaniah_github';
+        socialAvatar = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150';
+        socialRole = 'Systems Architect';
+      }
+
+      const registeredUsersJson = localStorage.getItem('continuum-registered-users');
+      const usersMap = registeredUsersJson ? JSON.parse(registeredUsersJson) : {};
+
+      // If already registered, use existing; otherwise create fresh
+      let userRecord = usersMap[socialEmail];
+      if (!userRecord) {
+        userRecord = {
+          id: `usr-soc-${Date.now().toString().slice(-6)}`,
+          email: socialEmail,
+          username: socialUser,
+          bio: `Verified node connected via ${provider.toUpperCase()} single sign-on security. Committed to Continuum Hub operations.`,
+          avatar: socialAvatar,
+          xp: 250, // bonus XP for social integration!
+          level: 1,
+          rank: 'Bronze',
+          dailyStreak: 1,
+          lastActive: new Date().toISOString(),
+          balance: 500.00,
+          skills: ['Single Sign-On', 'Identity Sync', 'Unified Ledger'],
+          role: socialRole,
+          twoFactorEnabled: true, // Social auth provides instant MFA security
+          preferences: {
+            darkMode: true,
+            reducedMotion: false,
+            highContrast: false,
+            language: 'en'
+          }
+        };
+        usersMap[socialEmail] = userRecord;
+        localStorage.setItem('continuum-registered-users', JSON.stringify(usersMap));
+      }
+
+      localStorage.setItem('continuum-last-email', socialEmail);
+      localStorage.setItem('continuum-has-visited', 'true');
+      sessionStorage.setItem('continuum-session-active', 'true');
+      localStorage.setItem('continuum-active-user', JSON.stringify(userRecord));
+
+      setSuccess(`Securely authenticated with ${provider.charAt(0).toUpperCase() + provider.slice(1)}! Welcome, ${userRecord.username}.`);
+      setSocialLoading(null);
+
+      setTimeout(() => {
+        onLogin(userRecord);
+      }, 800);
+    }, 1500);
+  };
 
   // Check if they have visited before on mount
   useEffect(() => {
-    const hasVisited = localStorage.getItem('inertia-has-visited') === 'true';
-    const registeredUsersJson = localStorage.getItem('inertia-registered-users');
+    const hasVisited = localStorage.getItem('continuum-has-visited') === 'true';
+    const registeredUsersJson = localStorage.getItem('continuum-registered-users');
     
     // Seed default user so they can login as an old user immediately!
     if (!registeredUsersJson) {
       const defaultUsersMap = {
         [INITIAL_USER.email.toLowerCase()]: INITIAL_USER,
-        'demo@inertia.com': {
+        'demo@continuum.com': {
           ...INITIAL_USER,
-          email: 'demo@inertia.com',
+          email: 'demo@continuum.com',
           username: 'demo_user',
           balance: 1000.00,
           xp: 1500,
@@ -57,7 +133,7 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
           rank: 'Silver'
         }
       };
-      localStorage.setItem('inertia-registered-users', JSON.stringify(defaultUsersMap));
+      localStorage.setItem('continuum-registered-users', JSON.stringify(defaultUsersMap));
     }
 
     setHasVisitedBefore(hasVisited);
@@ -65,7 +141,7 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
       setAuthMode('signin'); // default returning visitors to Sign In
       
       // Try to prefill with last active user's email if cached
-      const lastEmail = localStorage.getItem('inertia-last-email');
+      const lastEmail = localStorage.getItem('continuum-last-email');
       if (lastEmail) {
         setEmail(lastEmail);
       }
@@ -131,7 +207,7 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
     setError('');
     setSuccess('');
 
-    const registeredUsersJson = localStorage.getItem('inertia-registered-users');
+    const registeredUsersJson = localStorage.getItem('continuum-registered-users');
     const usersMap = registeredUsersJson ? JSON.parse(registeredUsersJson) : {};
 
     if (authMode === 'signin') {
@@ -148,10 +224,10 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
       setSuccess(`Connection established. Welcome back, ${userRecord.username}!`);
       
       // Save last email & active session state
-      localStorage.setItem('inertia-last-email', cleanedEmail);
-      localStorage.setItem('inertia-has-visited', 'true');
-      sessionStorage.setItem('inertia-session-active', 'true');
-      localStorage.setItem('inertia-active-user', JSON.stringify(userRecord));
+      localStorage.setItem('continuum-last-email', cleanedEmail);
+      localStorage.setItem('continuum-has-visited', 'true');
+      sessionStorage.setItem('continuum-session-active', 'true');
+      localStorage.setItem('continuum-active-user', JSON.stringify(userRecord));
 
       setTimeout(() => {
         onLogin(userRecord);
@@ -180,7 +256,7 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
         id: `usr-${Date.now().toString().slice(-6)}`,
         email: cleanedEmail,
         username: cleanedUsername,
-        bio: `${role} node initialized on Inertia Ecosystem. Committed to start, learn, and trade with highest security parameters.`,
+        bio: `${role} node initialized on Continuum Ecosystem. Committed to start, learn, and trade with highest security parameters.`,
         avatar: finalAvatar,
         xp: 100, // starting xp boost
         level: 1,
@@ -201,11 +277,11 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
 
       // Save to registered map & persist globally
       usersMap[cleanedEmail] = newUser;
-      localStorage.setItem('inertia-registered-users', JSON.stringify(usersMap));
-      localStorage.setItem('inertia-last-email', cleanedEmail);
-      localStorage.setItem('inertia-has-visited', 'true');
-      sessionStorage.setItem('inertia-session-active', 'true');
-      localStorage.setItem('inertia-active-user', JSON.stringify(newUser));
+      localStorage.setItem('continuum-registered-users', JSON.stringify(usersMap));
+      localStorage.setItem('continuum-last-email', cleanedEmail);
+      localStorage.setItem('continuum-has-visited', 'true');
+      sessionStorage.setItem('continuum-session-active', 'true');
+      localStorage.setItem('continuum-active-user', JSON.stringify(newUser));
 
       setSuccess(`Unified profile created! Booting core dashboard and ledger...`);
 
@@ -220,21 +296,21 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
     setError('');
     const defaultEmail = INITIAL_USER.email.toLowerCase();
     
-    const registeredUsersJson = localStorage.getItem('inertia-registered-users');
+    const registeredUsersJson = localStorage.getItem('continuum-registered-users');
     const usersMap = registeredUsersJson ? JSON.parse(registeredUsersJson) : {};
     
     // Ensure default user is in the map
     if (!usersMap[defaultEmail]) {
       usersMap[defaultEmail] = INITIAL_USER;
-      localStorage.setItem('inertia-registered-users', JSON.stringify(usersMap));
+      localStorage.setItem('continuum-registered-users', JSON.stringify(usersMap));
     }
 
     const userToLoad = usersMap[defaultEmail];
     
-    localStorage.setItem('inertia-last-email', defaultEmail);
-    localStorage.setItem('inertia-has-visited', 'true');
-    sessionStorage.setItem('inertia-session-active', 'true');
-    localStorage.setItem('inertia-active-user', JSON.stringify(userToLoad));
+    localStorage.setItem('continuum-last-email', defaultEmail);
+    localStorage.setItem('continuum-has-visited', 'true');
+    sessionStorage.setItem('continuum-session-active', 'true');
+    localStorage.setItem('continuum-active-user', JSON.stringify(userToLoad));
 
     setSuccess(`Connecting with pre-seeded architect profile...`);
     setTimeout(() => {
@@ -256,10 +332,10 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-950 font-black text-xl tracking-tighter">
-                I
+                C
               </div>
               <div>
-                <h1 className="text-xl font-black tracking-tight text-slate-950 dark:text-white leading-none">INERTIA</h1>
+                <h1 className="text-xl font-black tracking-tight text-slate-950 dark:text-white leading-none">CONTINUUM</h1>
                 <span className="text-[10px] uppercase tracking-widest font-mono text-teal-600 dark:text-teal-400 font-bold">Secure Ecosystem</span>
               </div>
             </div>
@@ -539,6 +615,60 @@ export default function GetStarted({ onLogin, darkMode }: GetStartedProps) {
               </button>
 
             </form>
+
+            {/* Divider with text */}
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-slate-200/50 dark:border-slate-800/80"></div>
+              <span className="flex-shrink mx-4 text-[10px] uppercase font-mono tracking-widest text-slate-400 font-bold">
+                Or Continue With
+              </span>
+              <div className="flex-grow border-t border-slate-200/50 dark:border-slate-800/80"></div>
+            </div>
+
+            {/* Social Authentication Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                type="button"
+                disabled={socialLoading !== null}
+                onClick={() => handleSocialLogin('google')}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F2F6F3]/50 dark:bg-slate-900/40 hover:bg-[#F2F6F3] dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/80 rounded-xl transition-all text-xs font-bold text-slate-850 dark:text-slate-300 cursor-pointer disabled:opacity-50"
+              >
+                {socialLoading === 'google' ? (
+                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Chrome className="w-4 h-4 text-rose-500" />
+                )}
+                <span>Google</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={socialLoading !== null}
+                onClick={() => handleSocialLogin('apple')}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F2F6F3]/50 dark:bg-slate-900/40 hover:bg-[#F2F6F3] dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/80 rounded-xl transition-all text-xs font-bold text-slate-855 dark:text-slate-300 cursor-pointer disabled:opacity-50"
+              >
+                {socialLoading === 'apple' ? (
+                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Apple className="w-4 h-4 text-slate-950 dark:text-white" />
+                )}
+                <span>Apple</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={socialLoading !== null}
+                onClick={() => handleSocialLogin('github')}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#F2F6F3]/50 dark:bg-slate-900/40 hover:bg-[#F2F6F3] dark:hover:bg-slate-900 border border-slate-200/50 dark:border-slate-800/80 rounded-xl transition-all text-xs font-bold text-slate-855 dark:text-slate-300 cursor-pointer disabled:opacity-50"
+              >
+                {socialLoading === 'github' ? (
+                  <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <Github className="w-4 h-4 text-slate-700 dark:text-slate-350" />
+                )}
+                <span>GitHub</span>
+              </button>
+            </div>
 
             {/* Quick Demo Bypass for Reviewers */}
             <div className="pt-4 border-t border-slate-200/55 dark:border-slate-900 flex flex-col sm:flex-row gap-3 items-center justify-between text-[11px]">
