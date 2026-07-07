@@ -670,13 +670,14 @@ export default function SocialHub({ user }: SocialHubProps) {
                   className="flex-1 text-xs p-3 border border-slate-150 dark:border-slate-900 bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white rounded-lg focus:outline-none glass-input"
                 />
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-50 dark:border-slate-900">
-                <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-500 animate-pulse" /> Post shares instantly across Unfazed, Hustler & Stack
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2 border-t border-slate-50 dark:border-slate-900">
+                <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3 text-amber-500 animate-pulse flex-shrink-0" />
+                  <span>Post shares instantly across Unfazed, Hustler & Stack</span>
                 </span>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-lg cursor-pointer flex items-center gap-1.5"
+                  className="w-full sm:w-auto px-4 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-lg cursor-pointer flex items-center justify-center gap-1.5 flex-shrink-0"
                 >
                   <Send className="w-3 h-3" /> Share Concept
                 </button>
@@ -755,18 +756,18 @@ export default function SocialHub({ user }: SocialHubProps) {
                   )}
 
                   {/* Comment Input */}
-                  <form onSubmit={(e) => handleAddComment(post.id, e)} className="flex gap-2">
+                  <form onSubmit={(e) => handleAddComment(post.id, e)} className="flex flex-col sm:flex-row gap-2 w-full">
                     <input
                       type="text"
                       required
                       placeholder="Write a constructive comment..."
                       value={commentInputs[post.id] || ''}
                       onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })}
-                      className="flex-1 text-[11px] px-3 py-1.5 border border-slate-150 dark:border-slate-900 bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white rounded-lg focus:outline-none glass-input"
+                      className="flex-1 min-w-0 text-[11px] px-3 py-1.5 border border-slate-150 dark:border-slate-900 bg-white/50 dark:bg-slate-950/50 text-slate-900 dark:text-white rounded-lg focus:outline-none glass-input"
                     />
                     <button
                       type="submit"
-                      className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-[10px] font-bold rounded-lg cursor-pointer transition-all"
+                      className="w-full sm:w-auto px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-[10px] font-bold rounded-lg cursor-pointer transition-all whitespace-nowrap flex-shrink-0 flex items-center justify-center"
                     >
                       Comment
                     </button>
